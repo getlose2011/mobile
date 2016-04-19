@@ -1,0 +1,10 @@
+urls https://codeigniter.org.tw/userguide3/general/urls.html
+ 
+URI 區段
+區段在 URL 中，是通過 Model-View-Controller 架構來完成，常常表示方式如下：
+example.com/class{controller}/function{method}/ID
+
+application\config	CodeIgniter 當 URI 不存在的時候，如果當你個網站根目錄 URL 被請求時，可以被設定預設載入的 Controller。 去指定預設得 Controller，打開你的 application/config/routes.php 檔案然後設定這個變數：$route['default_controller'] = 'Blog';
+
+使用自建類別(class)
+https://codeigniter.org.tw/user_guide/general/creating_libraries.html
