@@ -9,27 +9,38 @@ class News extends CI_Controller {
 		parent::__construct();
 		
         $this->load->model('news_model');
-        $this->load->library('Data');
+        $this->load->library('Data');//自訂的類別
 		
     }
 	
 	//預設沒URL的方法時,會先執行index()方法
 	public function index($languages='tw')
 	{
-		
-		
-		//ini_set('memory_list', '512M');
+		$table = 'news';
 		$page = !is_null($this->input->get('page'))?$this->input->get('page'):1;
-		
-		//echo $page;
-		//var_dump($page);
-		
+
 		//載入語言application\language的資料夾
 		$this->lang->load('news_lang', $languages);	
 		
-		$data['rsp_list'] = $this->news_model->get_news($page, $languages);
 		$data['page'] = $page;
+	
 		
+		//$where = "lang_set='{$languages}' AND show='1'";也可以自己訂義
+		//如果有LIKE就用自己訂義的
+		//$where = "lang_set='{$languages}' AND show='1' AND title LIKE '%20%'";
+		//第一種方法
+		//$where = array('lang_set' => $languages, 'show' => '1');
+		//$orderby = 'fkey DESC, created_t DESC';
+		//$like = "'title', 'c'";
+		//$data['rsp_list'] = $this->news_model->getAllByPage($page, Data::$_page, $where, $table, $orderby);
+		//$data['total_count'] = $this->news_model->getTotalCount($table, $where);
+
+		//第二種方法
+		
+		$sql = "select * from news WHERE lang_set = '{$languages}' AND `show` = 1 ORDER BY fkey ASC";
+		$data['rsp_list'] =  $this->news_model->getJoinByPage($page, Data::$_page, $sql);
+		$data['total_count'] = $this->news_model->getTotalCountByJoin($sql);
+
 		$this->load->view('layout/header');
 		$this->load->view('news/index', $data);
 		$this->load->view('layout/footer');

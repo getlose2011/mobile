@@ -53,6 +53,7 @@ class CI_Model {
 	 *
 	 * @return	void
 	 */
+
 	public function __construct()
 	{
 		log_message('info', 'Model Class Initialized');
@@ -68,6 +69,7 @@ class CI_Model {
 	 *
 	 * @param	string	$key
 	 */
+	private $_number_page = 10;
 	public function __get($key)
 	{
 		// Debugging note:
@@ -76,5 +78,70 @@ class CI_Model {
 		//	most likely a typo in your model code.
 		return get_instance()->$key;
 	}
+
+	public function getJoinByPage($page, $number_page, $sql) {
+		if (empty($page))
+		{
+            $page = 1;
+		}
+
+        if (empty($number_page))
+        {
+        	$number_page = $this->_number_page;
+        }
+        $offset = ($page - 1)* $number_page;   
+        $limit = ' LIMIT  ' . $offset . ', ' . $number_page . ' ';
+		$sql .= $limit;	
+		$query = $this->db->query($sql);
+        return $query->result_array();
+    }
+
+	public function getTotalCountByJoin($sql)
+	{
+		$query = $this->db->query($sql);
+        return $query->num_rows();
+	}
+
+	public function getAllByPage($page, $number_page, $where, $table, $orderby)
+	{
+
+
+		if(empty($page)){
+			$page = 1;
+		}
+		if (empty($number_page)) {
+            $number_page = $this->_number_page;
+        }
+        $offset = ($page - 1)* $number_page;
+        $this->db->select('*');
+        $this->db->from($table);
+
+        if(!is_null($where)){
+        	$this->db->where($where);
+        }
+       	
+       	$this->db->limit($number_page, $offset);
+
+       	if(!is_null($orderby))
+       	{
+       		$this->db->order_by($orderby); 
+       	}
+       	$query = $this->db->get();
+       	return $query->result_array();
+	}
+
+
+	 public function getTotalCount($table, $where) {       
+
+        $this->db->select('*');
+        $this->db->from($table);
+
+        if(!is_null($where)){
+        	$this->db->where($where);
+        }
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
 
 }
