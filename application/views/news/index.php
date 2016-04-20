@@ -1,9 +1,10 @@
 <div role="main" class="ui-content">
 	<?php
-	//var_dump($rsp_list);
+		$attributes = array('method' => 'get', 'name' => 'mainform', 'id' => 'mainform');
+		$hidden = array('lang_set' => $lang_set);
+		echo form_open('News/index/', $attributes, $hidden);
 		foreach($rsp_list as $key => $data)
 		{
-
 	?>
 			
 			<div data-role="collapsible">
