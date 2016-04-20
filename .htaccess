@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine on
 	RewriteBase /luckybobi/mobile
-	RewriteCond $1 !^(index\.php|images|robots\.txt|$)
+	RewriteCond $1 !^(index\.php|images|robots\.txt|Resource|$)
 	RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 </IfModule>
