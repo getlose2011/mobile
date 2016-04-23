@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class News extends CI_Controller {
         
+	const SQL_PREFIX = 'news';
 	public function __construct()
     {
 		//繼承CI construct
@@ -24,15 +25,20 @@ class News extends CI_Controller {
 		$now = time();
 		$page = !is_null($this->input->get('page'))?$this->input->get('page'):1;
 		$lang_set = !is_null($this->input->get('lang_set'))?$this->input->get('lang_set'):'tw';
+		$cat = !is_null($this->input->get('cat'))?$this->input->get('cat'):'';
 		$number_page = !is_null($this->input->get('number_page')) ? $this->input->get('number_page') : Data::$_page;
 		//載入語言application\language的資料夾
 		$this->lang->load('news_lang', $lang_set);	
 		
+		$data['cat'] = $cat;
 		$data['page'] = $page;
 		$data['lang_set'] = $lang_set;
 		
-
-
+		//news 裡的所有目錄
+		$table = self::SQL_PREFIX.'_cat';
+		$where = array('lang_set' => $lang_set);
+		$orderby = 'csn ASC';
+		$data['rsp_menu_list'] = $this->news_model->getAllByPage(1, 9999, $where, $table, $orderby);
 		//$where = "lang_set='{$lang_set}' AND show='1'";也可以自己訂義
 		//如果有LIKE就用自己訂義的
 		//$where = "lang_set='{$lang_set}' AND show='1' AND title LIKE '%20%'";
@@ -44,8 +50,10 @@ class News extends CI_Controller {
 		//$data['total_count'] = $this->news_model->getTotalCount($table, $where);
 
 		//第二種方法
-		
-		$sql = "select * from news WHERE lang_set = '{$lang_set}' AND `show` = 1 AND `publish_t` <= $now and `overdue_t` >= $now ORDER BY fkey ASC";
+		//如果用此方法請加上 addslashes 過濾
+		$sql = "select * from ".self::SQL_PREFIX." WHERE lang_set = '".addslashes($lang_set)."' AND `show` = 1 AND `publish_t` <= $now and `overdue_t` >= $now";
+		if(!empty($cat))$sql .= ' AND cat = '.(addslashes($cat));
+		$sql .=' order by top desc,publish_t desc';
 		$data['rsp_list'] =  $this->news_model->getJoinByPage($page, $number_page, $sql);
 		$data['total_count'] = $this->news_model->getTotalCountByJoin($sql);
 		$data['total_pages'] = Tools::getTotalPage($data['total_count'], $number_page);
