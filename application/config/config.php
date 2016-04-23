@@ -422,6 +422,7 @@ $config['standardize_newlines'] = FALSE;
 |          for backwards compatibility purposes!
 |
 */
+/*true則可避免xss攻擊*/
 $config['global_xss_filtering'] = FALSE;
 
 /*
